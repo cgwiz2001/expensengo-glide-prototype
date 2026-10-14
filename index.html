@@ -1,0 +1,24 @@
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>ExpenseNGo — Redesign concept "Glide"</title><link rel="stylesheet" href="styles.css"></head>
+<body data-theme="dark" data-ctx="work">
+<div class="app">
+ <aside class="rail">
+  <div class="brand"><span class="logo">e</span><b>expense<i>ngo</i></b></div>
+  <nav id="railnav"></nav>
+  <div class="rail-foot"><button class="chip" onclick="toggleTheme()">Light / dark</button></div>
+ </aside>
+ <main>
+  <header class="top">
+   <div class="brand m"><span class="logo">e</span></div>
+   <div class="ctx" role="tablist"><span class="thumb"></span><button onclick="setCtx('work')">Work</button><button onclick="setCtx('personal')">Personal</button></div>
+   <button class="icon" onclick="go('news')" aria-label="What's new"><svg class="i" viewBox="0 0 24 24"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9M10.3 21a1.9 1.9 0 0 0 3.4 0"/></svg><span class="dot"></span></button>
+   <button class="avatar" onclick="go('settings')">PL</button>
+  </header>
+  <div class="mirror" id="mirror">Viewing Pixie’s account — read-only, changes are off. <a onclick="go('settings')">Why?</a></div>
+  <div class="sample">SAMPLE DATA — for illustration only</div>
+  <section id="view"></section>
+ </main>
+ <nav class="tabbar" id="tabbar"></nav>
+ <button class="fab" onclick="go('scan')" aria-label="Scan receipt"><svg viewBox="0 0 24 24"><path d="M4 8V5a1 1 0 0 1 1-1h3M16 4h3a1 1 0 0 1 1 1v3M20 16v3a1 1 0 0 1-1 1h-3M8 20H5a1 1 0 0 1-1-1v-3M7 12h10"/></svg></button>
+</div>
+<script src="app.js"></script></body></html>
