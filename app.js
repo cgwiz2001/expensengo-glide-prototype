@@ -77,3 +77,4 @@ function render(){const v=document.getElementById('view');v.innerHTML=V[S.screen
  document.body.classList.toggle('ro',S.ro)}
 const q=new URLSearchParams(location.search);S.ro=q.has('ro');if(q.get('theme'))document.body.dataset.theme=q.get('theme');if(q.get('ctx'))setCtx(q.get('ctx'));
 const h=location.hash.slice(1).split('/');if(h[0])S.screen=h[0],S.arg=h[1];render();
+addEventListener('hashchange',()=>{const h=location.hash.slice(1).split('/');const s=h[0]||'overview';if(s!==S.screen||h[1]!==S.arg){S.screen=s;S.arg=h[1];render();window.scrollTo(0,0)}});
