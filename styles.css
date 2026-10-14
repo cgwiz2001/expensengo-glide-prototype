@@ -116,3 +116,40 @@ svg.i{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.8;stro
 .label{font-size:13px;font-weight:600;color:var(--tx2)}
 .receipt{font-family:"Courier New",monospace}
 @media(max-width:899px){html{scrollbar-width:none}}
+/* ===== Motion (Glide) ===== */
+@property --teal{syntax:"<color>";inherits:true;initial-value:#19D3C5}
+@property --teal-2{syntax:"<color>";inherits:true;initial-value:#0FA89C}
+body{transition:--teal .45s var(--ease),--teal-2 .45s var(--ease)}
+.chip,.cta,.tabbar button,.rail nav button{transition:color .3s var(--ease),background-color .3s var(--ease),transform .2s var(--ease)}
+.cta:active,.item:active{transform:scale(.98)}
+.rise{animation:rise .42s var(--ease) both;animation-delay:var(--d,0ms)}
+@keyframes rise{from{opacity:0;transform:translateY(10px)}}
+.slide{animation:slide .36s var(--ease) both;animation-delay:var(--d,0ms)}
+@keyframes slide{from{opacity:0;transform:translateX(16px)}}
+.grow{transform-origin:bottom;animation:grow .5s var(--ease) both;animation-delay:var(--d,0ms)}
+@keyframes grow{from{transform:scaleY(0)}}
+.growx{transform-origin:left;animation:growx .6s var(--ease) both;animation-delay:var(--d,0ms)}
+@keyframes growx{from{transform:scaleX(0)}}
+.donut.spin{animation:donut .6s var(--ease) both .15s}
+@keyframes donut{from{opacity:0;transform:rotate(-90deg) scale(.85)}}
+.donut.spin>div{animation:donutc .6s var(--ease) both .15s}@keyframes donutc{from{transform:rotate(90deg)}}
+/* torn receipt prints out after a scan */
+.two>.card:has(.perf){animation:print .55s var(--ease) both .1s;transform-origin:top}
+@keyframes print{from{opacity:0;clip-path:inset(0 0 100% 0);transform:translateY(-12px)}to{clip-path:inset(0 0 0 0)}}
+.two>.card:has(.perf).rise{animation:print .55s var(--ease) both .1s}
+/* View transitions: only the page swaps; chrome stays put */
+#view{view-transition-name:page}
+.tabbar{view-transition-name:tabbar}.rail{view-transition-name:rail}.top{view-transition-name:top}
+::view-transition-group(*){animation-duration:.38s;animation-timing-function:cubic-bezier(.2,.8,.2,1)}
+::view-transition-old(page){animation:vt-out .22s cubic-bezier(.4,0,1,1) both}
+::view-transition-new(page){animation:vt-in .36s cubic-bezier(.2,.8,.2,1) both .04s}
+[data-dir=fwd]::view-transition-old(page){--x:-24px}[data-dir=fwd]::view-transition-new(page){--x:24px}
+[data-dir=back]::view-transition-old(page){--x:24px}[data-dir=back]::view-transition-new(page){--x:-24px}
+@keyframes vt-out{to{opacity:0;transform:translateX(var(--x,0))}}
+@keyframes vt-in{from{opacity:0;transform:translateX(var(--x,0))}}
+::view-transition-old(morph),::view-transition-new(morph){animation-duration:.4s;height:100%;object-fit:cover}
+::view-transition-group(morph){z-index:3;animation-duration:.42s}
+@media(prefers-reduced-motion:reduce){
+ *,*:before,*:after,::view-transition-group(*),::view-transition-old(*),::view-transition-new(*){animation-duration:1ms!important;animation-delay:0ms!important;transition-duration:1ms!important}
+ .laser{animation:none}
+}

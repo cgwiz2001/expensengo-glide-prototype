@@ -13,11 +13,11 @@ const P=[{id:11,d:'Today',m:'Tesco Extra',c:'Groceries',i:'food',col:'#FFB547',a
 const data=()=>S.ctx==='work'?W:P;
 const gbp=n=>'£'+n.toLocaleString('en-GB',{minimumFractionDigits:2,maximumFractionDigits:2});
 const nav=[['overview','Home','home'],['expenses','Expenses','list'],null,['reports','Reports','report'],['settings','Settings','cog']];
-function go(s,arg){S.screen=s;S.arg=arg;location.hash=s+(arg?'/'+arg:'');render();window.scrollTo(0,0)}
-function setCtx(c){S.ctx=c;document.body.dataset.ctx=c;render()}
+function go(s,arg,ev){navTo(s,arg,ev&&ev.currentTarget)}
+function setCtx(c){if(S.ctx===c&&document.body.dataset.ctx===c)return;S.ctx=c;document.body.dataset.ctx=c;S.dir=0;swap(()=>render())}
 function toggleTheme(){const b=document.body;b.dataset.theme=b.dataset.theme==='dark'?'light':'dark'}
 function head(t,sub,back){return `<div class="row" style="margin:4px 0 20px">${back?`<button class="icon" onclick="go('${back}')" aria-label="Back">${ic('back')}</button>`:''}<div class="sp"><h1>${t}</h1>${sub?`<div class="muted">${sub}</div>`:''}</div></div>`}
-function item(e){return `<div class="item" onclick="go('${e.c==='Mileage'?'mileage':'detail'}',${e.id})"><div class="ic" style="--c:${e.col}">${ic(e.i)}</div><div class="mid"><div class="t">${e.m}</div><div class="s">${e.c}${e.cl?' · '+e.cl:''}</div></div><div style="text-align:right"><div class="amt">${gbp(e.a)}</div>${e.st==='Needs receipt'?'<span class="tag warn">Needs receipt</span>':''}</div></div>`}
+function item(e){return `<div class="item" data-id="${e.id}" onclick="go('${e.c==='Mileage'?'mileage':'detail'}',${e.id},event)"><div class="ic" style="--c:${e.col}">${ic(e.i)}</div><div class="mid"><div class="t">${e.m}</div><div class="s">${e.c}${e.cl?' · '+e.cl:''}</div></div><div style="text-align:right"><div class="amt">${gbp(e.a)}</div>${e.st==='Needs receipt'?'<span class="tag warn">Needs receipt</span>':''}</div></div>`}
 function grouped(arr){let o='',d;arr.forEach(e=>{if(e.d!==d){if(d)o+='</div>';d=e.d;o+=`<div class="day">${d}<span class="sp"></span>${gbp(arr.filter(x=>x.d===d).reduce((a,b)=>a+b.a,0))}</div><div class="list">`}o+=item(e)});return o+'</div>'}
 const V={
 overview(){const w=S.ctx==='work',tot=data().reduce((a,b)=>a+b.a,0);const days=w?[18,42,30,64,22,55,86]:[12,30,8,44,20,62,25];
@@ -44,7 +44,7 @@ expenses(){return `${head('Expenses',`${S.ctx==='work'?'118':'42'} this year · 
  <div class="chips" style="margin:12px 0 4px"><span class="chip on">This week</span><span class="chip">All</span><span class="chip">Needs receipt · 1</span><span class="chip">Mileage</span><span class="chip">${ic('filter')} More</span></div>
  ${grouped(data())}<p class="muted" style="text-align:center;margin-top:16px;font-size:13px">Scroll for older — loads automatically</p>`},
 detail(){const e=[...W,...P].find(x=>x.id==S.arg)||W[0];const ro=S.ro;return `${head(e.m,e.d+' · '+e.c,'expenses')}<div class="two"><div class="stack">
- <div class="card" style="text-align:center;padding:24px"><div class="disp" style="font-size:44px">${gbp(e.a)}</div><div class="muted">incl. VAT ${gbp(e.a/6)}</div></div>
+ <div class="card dhead" style="text-align:center;padding:24px"><div class="disp" style="font-size:44px">${gbp(e.a)}</div><div class="muted">incl. VAT ${gbp(e.a/6)}</div></div>
  <div class="card" style="height:220px;display:grid;place-items:center;background:var(--card2)"><div class="receipt" style="position:static;transform:rotate(-2deg);height:180px;width:130px;font-size:9px"><b>${e.m.toUpperCase()}</b><hr>TOTAL ${gbp(e.a)}</div></div></div>
  <div class="stack"><div class="card">${[['Client',e.cl||'—'],['Category',e.c],['Status',e.st],['Added by','Scan · auto-cropped']].map(f=>`<div class="field"><span class="k">${f[0]}</span><span class="v">${f[1]}</span></div>`).join('')}</div>
  ${ro?`<div class="card row muted" style="font-size:13px">${ic('lock')}<span>Read-only: editing is off while viewing a shared account.</span></div>`:`<div class="grid2"><button class="cta sec">${ic('edit')} Edit</button><button class="cta sec" style="color:var(--bad)">${ic('trash')} Delete</button></div>`}</div></div>`},
@@ -70,11 +70,11 @@ settings(){const g=(t,rows)=>`<div class="day">${t}</div><div class="list">${row
  ${g('App',[['scan','Auto-crop receipts','','',true],['mail','Email submissions','','',null],['palette','Appearance','#8B7CFF','Dark · Lagoon'],['shield','Privacy','',''],['spark','What’s new','#FF8A3D','2 updates']])}</div></div>`},
 news(){return `${head('What’s new','Product updates','overview')}<div class="stack">${[['spark','New: smarter receipt reading','Totals, VAT and merchant are now filled in for most UK receipts in under two seconds.','14 Oct'],['report','Client reports now export to Excel','Every column your accounts team asks for, ready to send.','2 Oct']].map(n=>`<div class="card row" style="align-items:flex-start"><div class="ic">${ic(n[0])}</div><div class="sp"><b>${n[1]}</b><div class="muted" style="font-size:14px;margin-top:4px">${n[2]}</div><div style="font-size:12px;color:var(--tx3);margin-top:8px">${n[3]}</div></div></div>`).join('')}</div>`}
 };
-function render(){const v=document.getElementById('view');v.innerHTML=V[S.screen]?V[S.screen]():V.overview();v.className='fade';
+function render(){const v=document.getElementById('view');v.innerHTML=V[S.screen]?V[S.screen]():V.overview();v.className='';
  const cur={detail:'expenses',mileage:'expenses',review:'scan',insights:'overview',news:'overview'}[S.screen]||S.screen;
  document.getElementById('tabbar').innerHTML=nav.map(n=>n?`<button class="${cur===n[0]?'on':''}" onclick="go('${n[0]}')">${ic(n[2],'')}<span>${n[1]}</span></button>`:'<span class="gap"></span>').join('');
  document.getElementById('railnav').innerHTML=`<button class="scanbtn" onclick="go('scan')">${ic('scan','')}Scan receipt</button>`+[['overview','Home','home'],['expenses','Expenses','list'],['reports','Reports','report'],['insights','Insights','spark'],['settings','Settings','cog']].map(n=>`<button class="${cur===n[0]?'on':''}" onclick="go('${n[0]}')">${ic(n[2],'')}${n[1]}</button>`).join('');
- document.body.classList.toggle('ro',S.ro)}
+ document.body.classList.toggle('ro',S.ro);enter(v)}
 const q=new URLSearchParams(location.search);S.ro=q.has('ro');if(q.get('theme'))document.body.dataset.theme=q.get('theme');if(q.get('ctx'))setCtx(q.get('ctx'));
 const h=location.hash.slice(1).split('/');if(h[0])S.screen=h[0],S.arg=h[1];render();
-addEventListener('hashchange',()=>{const h=location.hash.slice(1).split('/');const s=h[0]||'overview';if(s!==S.screen||h[1]!==S.arg){S.screen=s;S.arg=h[1];render();window.scrollTo(0,0)}});
+addEventListener('hashchange',()=>{const h=location.hash.slice(1).split('/');const s=h[0]||'overview';if(s!==S.screen||h[1]!==S.arg){navTo(s,h[1],null,true)}});
